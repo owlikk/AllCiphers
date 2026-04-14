@@ -11,7 +11,7 @@
         <h1>Cipher App</h1>
 
         <label for="cipher">Choose cipher:</label>
-        <select id="cipher" onchange="toggleFields()">
+        <select id="cipher">
             <option value="caesar">Caesar cipher</option>
             <option value="ascii">ASCII</option>
             <option value="koi8">KOI8</option>
@@ -32,12 +32,12 @@
             <input type="number" id="shift" value="3">
         </div>
 
-        <div id="key-group" style="display: none;">
+        <div id="key-group">
             <label for="key">Enter key:</label>
             <input type="text" id="key" placeholder="Enter key">
         </div>
 
-        <button type="button" onclick="encrypt()">Encrypt</button>
+        <button id="encrypt-btn" type="button">Encrypt</button>
 
         <h2>Result:</h2>
         <div id="result"></div>
