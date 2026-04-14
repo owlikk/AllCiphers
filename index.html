@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cipher Web App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Cipher Web App</h1>
+      <p class="subtitle">Web version of your Python ciphers</p>
+
+      <label for="cipher">Choose cipher</label>
+      <select id="cipher">
+        <option value="1">1 - Caesar cipher</option>
+        <option value="2">2 - ASCII</option>
+        <option value="3">3 - KOI8</option>
+        <option value="4">4 - Morse code</option>
+        <option value="5">5 - Vigenere cipher</option>
+        <option value="6">6 - Bacon cipher</option>
+        <option value="7">7 - Atbash cipher</option>
+        <option value="8">8 - Gronsfeld cipher</option>
+        <option value="9">9 - Polybius square</option>
+        <option value="10">10 - Playfair cipher</option>
+      </select>
+
+      <label for="text">Enter text</label>
+      <textarea id="text" rows="5" placeholder="Enter text..."></textarea>
+
+      <div id="shiftGroup" class="field hidden">
+        <label for="shift">Enter shift</label>
+        <input id="shift" type="number" placeholder="Enter shift" />
+      </div>
+
+      <div id="keyGroup" class="field hidden">
+        <label for="key">Enter key</label>
+        <input id="key" type="text" placeholder="Enter key" />
+      </div>
+
+      <button id="runBtn">Encrypt</button>
+
+      <div class="result-block">
+        <label for="result">Result</label>
+        <textarea id="result" rows="6" readonly placeholder="Result will appear here..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
