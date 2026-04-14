@@ -2,6 +2,7 @@ function isEnglishLettersAndSpaces(text) {
     return /^[A-Za-z\s]+$/.test(text);
 }
 
+// --- Caesar ---
 function caesarCipher(text, shift) {
     let result = "";
     for (const char of text) {
@@ -16,14 +17,20 @@ function caesarCipher(text, shift) {
     return result;
 }
 
+// --- ASCII ---
 function asciiEncode(text) {
     return text.split("").map(char => char.charCodeAt(0)).join(" ");
 }
 
+// --- KOI8 (для английских символов = ASCII часть) ---
 function koi8Encode(text) {
-    return "Encoding error.";
+    if (!isEnglishLettersAndSpaces(text)) {
+        return "Error: English letters and spaces only.";
+    }
+    return text.split("").map(char => char.charCodeAt(0)).join(" ");
 }
 
+// --- Morse ---
 const morseDict = {
     A: ".-", B: "-...", C: "-.-.", D: "-..",
     E: ".", F: "..-.", G: "--.", H: "....",
@@ -39,6 +46,7 @@ function morseEncode(text) {
     return text.toUpperCase().split("").map(char => morseDict[char] || "").join(" ");
 }
 
+// --- Vigenere ---
 function vigenereCipher(text, key) {
     let result = "";
     let keyIndex = 0;
@@ -58,6 +66,7 @@ function vigenereCipher(text, key) {
     return result;
 }
 
+// --- Bacon ---
 const baconDict = {
     A: "AAAAA", B: "AAAAB", C: "AAABA", D: "AAABB",
     E: "AABAA", F: "AABAB", G: "AABBA", H: "AABBB",
@@ -73,6 +82,7 @@ function baconEncode(text) {
     return text.toUpperCase().split("").map(char => baconDict[char] || "").join(" ");
 }
 
+// --- Atbash ---
 function atbashCipher(text) {
     const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const reversedUpper = "ZYXWVUTSRQPONMLKJIHGFEDCBA";
@@ -80,16 +90,13 @@ function atbashCipher(text) {
     const reversedLower = "zyxwvutsrqponmlkjihgfedcba";
 
     return text.split("").map(char => {
-        if (upper.includes(char)) {
-            return reversedUpper[upper.indexOf(char)];
-        }
-        if (lower.includes(char)) {
-            return reversedLower[lower.indexOf(char)];
-        }
+        if (upper.includes(char)) return reversedUpper[upper.indexOf(char)];
+        if (lower.includes(char)) return reversedLower[lower.indexOf(char)];
         return char;
     }).join("");
 }
 
+// --- Gronsfeld ---
 function gronsfeldCipher(text, key) {
     let result = "";
     let keyIndex = 0;
@@ -107,6 +114,7 @@ function gronsfeldCipher(text, key) {
     return result;
 }
 
+// --- Polybius ---
 const polybiusDict = {
     A: "11", B: "12", C: "13", D: "14", E: "15",
     F: "21", G: "22", H: "23", I: "24", J: "24",
@@ -121,6 +129,7 @@ function polybiusEncode(text) {
     return text.toUpperCase().split("").map(char => polybiusDict[char] || "").join(" ");
 }
 
+// --- Playfair ---
 function generatePlayfairMatrix(key) {
     const cleanKey = key.toUpperCase().replace(/J/g, "I");
     const used = new Set();
@@ -148,41 +157,32 @@ function generatePlayfairMatrix(key) {
 }
 
 function findPosition(matrix, char) {
-    for (let row = 0; row < 5; row++) {
-        for (let col = 0; col < 5; col++) {
-            if (matrix[row][col] === char) {
-                return [row, col];
-            }
+    for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 5; c++) {
+            if (matrix[r][c] === char) return [r, c];
         }
     }
-    return null;
 }
 
 function preparePlayfairText(text) {
-    const cleanText = text.toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "");
-    const prepared = [];
+    const clean = text.toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "");
+    const pairs = [];
     let i = 0;
 
-    while (i < cleanText.length) {
-        const first = cleanText[i];
+    while (i < clean.length) {
+        const a = clean[i];
+        const b = clean[i + 1];
 
-        if (i + 1 < cleanText.length) {
-            const second = cleanText[i + 1];
-
-            if (first === second) {
-                prepared.push(first + "X");
-                i += 1;
-            } else {
-                prepared.push(first + second);
-                i += 2;
-            }
+        if (!b || a === b) {
+            pairs.push(a + "X");
+            i++;
         } else {
-            prepared.push(first + "X");
-            i += 1;
+            pairs.push(a + b);
+            i += 2;
         }
     }
 
-    return prepared;
+    return pairs;
 }
 
 function playfairCipher(text, key) {
@@ -191,54 +191,36 @@ function playfairCipher(text, key) {
     let result = "";
 
     for (const pair of pairs) {
-        const a = pair[0];
-        const b = pair[1];
+        const [r1, c1] = findPosition(matrix, pair[0]);
+        const [r2, c2] = findPosition(matrix, pair[1]);
 
-        const [row1, col1] = findPosition(matrix, a);
-        const [row2, col2] = findPosition(matrix, b);
-
-        if (row1 === row2) {
-            result += matrix[row1][(col1 + 1) % 5];
-            result += matrix[row2][(col2 + 1) % 5];
-        } else if (col1 === col2) {
-            result += matrix[(row1 + 1) % 5][col1];
-            result += matrix[(row2 + 1) % 5][col2];
+        if (r1 === r2) {
+            result += matrix[r1][(c1 + 1) % 5];
+            result += matrix[r2][(c2 + 1) % 5];
+        } else if (c1 === c2) {
+            result += matrix[(r1 + 1) % 5][c1];
+            result += matrix[(r2 + 1) % 5][c2];
         } else {
-            result += matrix[row1][col2];
-            result += matrix[row2][col1];
+            result += matrix[r1][c2];
+            result += matrix[r2][c1];
         }
     }
 
     return result;
 }
 
+// --- UI ---
 function updateFields() {
     const cipher = document.getElementById("cipher").value;
     const shiftGroup = document.getElementById("shift-group");
     const keyGroup = document.getElementById("key-group");
-    const keyInput = document.getElementById("key");
 
     shiftGroup.classList.add("hidden");
     keyGroup.classList.add("hidden");
-    keyInput.placeholder = "Enter key";
 
-    if (cipher === "caesar") {
-        shiftGroup.classList.remove("hidden");
-    }
-
-    if (cipher === "vigenere") {
+    if (cipher === "caesar") shiftGroup.classList.remove("hidden");
+    if (["vigenere", "gronsfeld", "playfair"].includes(cipher)) {
         keyGroup.classList.remove("hidden");
-        keyInput.placeholder = "English letters only";
-    }
-
-    if (cipher === "gronsfeld") {
-        keyGroup.classList.remove("hidden");
-        keyInput.placeholder = "Digits only";
-    }
-
-    if (cipher === "playfair") {
-        keyGroup.classList.remove("hidden");
-        keyInput.placeholder = "English letters only";
     }
 }
 
@@ -246,109 +228,38 @@ function encrypt() {
     const cipher = document.getElementById("cipher").value;
     const text = document.getElementById("text").value;
     const shift = document.getElementById("shift").value;
-    const key = document.getElementById("key").value.trim();
-    const resultElement = document.getElementById("result");
+    const key = document.getElementById("key").value;
+    const result = document.getElementById("result");
 
-    if (text === "") {
-        resultElement.innerText = "Error: enter text.";
+    if (!text) {
+        result.innerText = "Error: enter text.";
         return;
     }
 
     if (cipher === "caesar") {
-        if (!isEnglishLettersAndSpaces(text)) {
-            resultElement.innerText = "Error: English letters and spaces only.";
-            return;
-        }
-        resultElement.innerText = caesarCipher(text, parseInt(shift, 10) || 0);
-        return;
+        result.innerText = caesarCipher(text, parseInt(shift) || 0);
+    } else if (cipher === "ascii") {
+        result.innerText = asciiEncode(text);
+    } else if (cipher === "koi8") {
+        result.innerText = koi8Encode(text);
+    } else if (cipher === "morse") {
+        result.innerText = morseEncode(text);
+    } else if (cipher === "vigenere") {
+        result.innerText = vigenereCipher(text, key);
+    } else if (cipher === "bacon") {
+        result.innerText = baconEncode(text);
+    } else if (cipher === "atbash") {
+        result.innerText = atbashCipher(text);
+    } else if (cipher === "gronsfeld") {
+        result.innerText = gronsfeldCipher(text, key);
+    } else if (cipher === "polybius") {
+        result.innerText = polybiusEncode(text);
+    } else if (cipher === "playfair") {
+        result.innerText = playfairCipher(text, key);
     }
-
-    if (cipher === "ascii") {
-        resultElement.innerText = asciiEncode(text);
-        return;
-    }
-
-    if (cipher === "koi8") {
-        resultElement.innerText = koi8Encode(text);
-        return;
-    }
-
-    if (cipher === "morse") {
-        if (!isEnglishLettersAndSpaces(text)) {
-            resultElement.innerText = "Error: English letters and spaces only.";
-            return;
-        }
-        resultElement.innerText = morseEncode(text);
-        return;
-    }
-
-    if (cipher === "vigenere") {
-        if (!isEnglishLettersAndSpaces(text)) {
-            resultElement.innerText = "Error: English letters and spaces only.";
-            return;
-        }
-        if (!/^[A-Za-z]+$/.test(key)) {
-            resultElement.innerText = "Error: key must contain English letters only.";
-            return;
-        }
-        resultElement.innerText = vigenereCipher(text, key);
-        return;
-    }
-
-    if (cipher === "bacon") {
-        if (!isEnglishLettersAndSpaces(text)) {
-            resultElement.innerText = "Error: English letters and spaces only.";
-            return;
-        }
-        resultElement.innerText = baconEncode(text);
-        return;
-    }
-
-    if (cipher === "atbash") {
-        if (!isEnglishLettersAndSpaces(text)) {
-            resultElement.innerText = "Error: English letters and spaces only.";
-            return;
-        }
-        resultElement.innerText = atbashCipher(text);
-        return;
-    }
-
-    if (cipher === "gronsfeld") {
-        if (!/^\d+$/.test(key)) {
-            resultElement.innerText = "Error: key must contain digits only.";
-            return;
-        }
-        resultElement.innerText = gronsfeldCipher(text, key);
-        return;
-    }
-
-    if (cipher === "polybius") {
-        if (!isEnglishLettersAndSpaces(text)) {
-            resultElement.innerText = "Error: English letters and spaces only.";
-            return;
-        }
-        resultElement.innerText = polybiusEncode(text);
-        return;
-    }
-
-    if (cipher === "playfair") {
-        if (!isEnglishLettersAndSpaces(text)) {
-            resultElement.innerText = "Error: English letters and spaces only.";
-            return;
-        }
-        if (!/^[A-Za-z]+$/.test(key)) {
-            resultElement.innerText = "Error: key must contain English letters only.";
-            return;
-        }
-        resultElement.innerText = playfairCipher(text, key);
-        return;
-    }
-
-    resultElement.innerText = "Invalid choice.";
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("cipher").addEventListener("change", updateFields);
-    document.getElementById("encrypt-btn").addEventListener("click", encrypt);
-    updateFields();
-});
+document.getElementById("cipher").addEventListener("change", updateFields);
+document.getElementById("encrypt-btn").addEventListener("click", encrypt);
+
+updateFields();
