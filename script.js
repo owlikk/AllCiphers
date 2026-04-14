@@ -2,7 +2,6 @@ function isEnglishLettersAndSpaces(text) {
     return /^[A-Za-z\s]+$/.test(text);
 }
 
-// --- Caesar ---
 function caesarCipher(text, shift) {
     let result = "";
     for (const char of text) {
@@ -17,12 +16,10 @@ function caesarCipher(text, shift) {
     return result;
 }
 
-// --- ASCII ---
 function asciiEncode(text) {
     return text.split("").map(char => char.charCodeAt(0)).join(" ");
 }
 
-// --- KOI8 (для английских символов = ASCII часть) ---
 function koi8Encode(text) {
     if (!isEnglishLettersAndSpaces(text)) {
         return "Error: English letters and spaces only.";
@@ -30,7 +27,6 @@ function koi8Encode(text) {
     return text.split("").map(char => char.charCodeAt(0)).join(" ");
 }
 
-// --- Morse ---
 const morseDict = {
     A: ".-", B: "-...", C: "-.-.", D: "-..",
     E: ".", F: "..-.", G: "--.", H: "....",
@@ -46,7 +42,6 @@ function morseEncode(text) {
     return text.toUpperCase().split("").map(char => morseDict[char] || "").join(" ");
 }
 
-// --- Vigenere ---
 function vigenereCipher(text, key) {
     let result = "";
     let keyIndex = 0;
@@ -66,7 +61,6 @@ function vigenereCipher(text, key) {
     return result;
 }
 
-// --- Bacon ---
 const baconDict = {
     A: "AAAAA", B: "AAAAB", C: "AAABA", D: "AAABB",
     E: "AABAA", F: "AABAB", G: "AABBA", H: "AABBB",
@@ -82,7 +76,6 @@ function baconEncode(text) {
     return text.toUpperCase().split("").map(char => baconDict[char] || "").join(" ");
 }
 
-// --- Atbash ---
 function atbashCipher(text) {
     const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const reversedUpper = "ZYXWVUTSRQPONMLKJIHGFEDCBA";
@@ -96,7 +89,6 @@ function atbashCipher(text) {
     }).join("");
 }
 
-// --- Gronsfeld ---
 function gronsfeldCipher(text, key) {
     let result = "";
     let keyIndex = 0;
@@ -114,7 +106,6 @@ function gronsfeldCipher(text, key) {
     return result;
 }
 
-// --- Polybius ---
 const polybiusDict = {
     A: "11", B: "12", C: "13", D: "14", E: "15",
     F: "21", G: "22", H: "23", I: "24", J: "24",
@@ -129,7 +120,6 @@ function polybiusEncode(text) {
     return text.toUpperCase().split("").map(char => polybiusDict[char] || "").join(" ");
 }
 
-// --- Playfair ---
 function generatePlayfairMatrix(key) {
     const cleanKey = key.toUpperCase().replace(/J/g, "I");
     const used = new Set();
@@ -209,7 +199,6 @@ function playfairCipher(text, key) {
     return result;
 }
 
-// --- UI ---
 function updateFields() {
     const cipher = document.getElementById("cipher").value;
     const shiftGroup = document.getElementById("shift-group");
